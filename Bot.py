@@ -5,7 +5,28 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import requests
+from flask import Flask
+import threading
+from datetime import datetime
+import pytz
 
+# Get the current time in UTC
+utc_now = datetime.now(pytz.utc)
+# Convert UTC time to IST
+ist_timezone = pytz.timezone('Asia/Kolkata')
+ist_now = utc_now.astimezone(ist_timezone)
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Service is running", 200
+
+def run_http_server():
+    app.run(host="0.0.0.0", port=8080)
+
+# Start the HTTP server in a separate thread
+threading.Thread(target=run_http_server, daemon=True).start()
 # Telegram API details
 TELEGRAM_API_KEY = "7703010489:AAF_Z5zxHfgEuzYqAgzDZun5obG39fE1p8Q"
 CHAT_IDS = ["2011774729","7520300427"]  # Replace with your chat IDs //7520300427-> client
@@ -69,7 +90,7 @@ def monitor_website(url):
             message = (
                 f"Game: {game_name},\n"
                 f"Spin Result: {game_result},\n"
-                f"Instance: {instance_value}"
+                f"Instance in IST: {ist_now.strftime('%H:%M:%S')}"
             )
             send_telegram_message(message)
     except Exception as e:
@@ -81,7 +102,6 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-# chrome_options.binary_location = "/home/render/chrome/opt/google/chrome/google-chrome"
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
