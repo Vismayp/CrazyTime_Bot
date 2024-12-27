@@ -13,5 +13,5 @@ tar -xf data.tar.xz
 
 # Step 4: Update PATH to include the Chrome binary
 export PATH=$HOME/chrome/opt/google/chrome:$PATH
-
+find / -name Bot.py
 python3 Bot.py
